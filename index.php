@@ -8,8 +8,6 @@
 
 		$query = "SELECT * FROM potty_tag.checkins WHERE time >= date_sub(now(), INTERVAL 5 MINUTE)";
 
-		echo $query;
-
 		$result = mysql_query($query, $link);
 
 		$male_pop = 0;

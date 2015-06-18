@@ -37,7 +37,7 @@
 	function performAction($action, $gender)
 	{
 
-		$output = '{"result": "failure"}';
+		$output = '{"success": false}';
 
 		switch ($action)
 		{
@@ -65,7 +65,7 @@
 	{
 		global $db_host, $db_user, $db_password;
 		$link = mysql_connect($db_host, $db_user, $db_password, true);
-		$output = '{"result": "failure"}';
+		$output = '{"success": false}';
 		
 		if($last_id !== null)
 		{
@@ -80,7 +80,7 @@
 			if ($result)
 			{
 				$id = mysql_insert_id($link);
-				$output = '{"result": "success", "id": ' . $id . '}';
+				$output = '{"success": true, "id": ' . $id . '}';
 			}
 		}
 		
@@ -91,8 +91,6 @@
 
 	function processCheckOut($checkin_id)
 	{
-		$success = false;
-
 		global $db_host, $db_user, $db_password;
 		$link = mysql_connect($db_host, $db_user, $db_password, true);
 
@@ -102,7 +100,7 @@
 
 		cleanDatabase($link);
 
-		return '{"result": "' . ($success ?  'success' : 'failure') . "}'";
+		return '{"success": ' . ($result ?  'true' : 'false') . '}';
 	}
 
 	function cleanDatabase($link)

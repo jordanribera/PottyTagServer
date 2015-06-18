@@ -8,7 +8,8 @@
 
 	function returnStatus()
 	{
-		$link = mysql_connect($_GLOBALS['db_host'], $_GLOBALS['$db_user'], $_GLOBALS['$db_password'], true);
+		global $db_host, $db_user, $db_password;
+		$link = mysql_connect($db_host, $db_user, $db_password, true);
 
 		$query = "SELECT * FROM potty_tag.checkins WHERE time >= date_sub(now(), INTERVAL 5 MINUTE)";
 
@@ -67,7 +68,8 @@
 	{
 		$success = false;
 
-		$link = mysql_connect($_GLOBALS['db_host'], $_GLOBALS['$db_user'], $_GLOBALS['$db_password'], true);
+		global $db_host, $db_user, $db_password;
+		$link = mysql_connect($db_host, $db_user, $db_password, true);
 
 		if($last_id !== null)
 		{
@@ -90,7 +92,8 @@
 	{
 		$success = false;
 
-		$link = mysql_connect($_GLOBALS['db_host'], $_GLOBALS['$db_user'], $_GLOBALS['$db_password'], true);
+		global $db_host, $db_user, $db_password;
+		$link = mysql_connect($db_host, $db_user, $db_password, true);
 
 		$query = "DELETE FROM potty_tag.checkins WHERE id='" . $checkin_id . "'";
 

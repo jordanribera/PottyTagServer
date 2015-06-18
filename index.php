@@ -37,7 +37,7 @@
 	function performAction($action, $gender)
 	{
 
-		$success = false;
+		$output = '{"result": "failure"}';
 
 		switch ($action)
 		{
@@ -45,20 +45,17 @@
 			case 'checkin':
 				$last_id = null;
 				if(isset($_GET['last_checkin'])) $last_id = $_GET['last_checkin'];
-				$success = processCheckIn($gender, $last_id);
+				$output = processCheckIn($gender, $last_id);
 
 				break;
 
 			case 'checkout':
 				$checkin_id = $_GET['checkin_id'];
-				$success = processCheckOut($checkin_id);
+				$output = processCheckOut($checkin_id);
 
 				break;
 
 		}
-
-		$output = '{"result": "failure"}';
-		if ($success) $output = '{"result": "success"}';
 
 		return $output;
 
@@ -66,26 +63,30 @@
 
 	function processCheckIn($gender, $last_id=null)
 	{
-		$success = false;
-
 		global $db_host, $db_user, $db_password;
 		$link = mysql_connect($db_host, $db_user, $db_password, true);
-
+		$output = '{"result": "failure"}';
+		
 		if($last_id !== null)
 		{
 			processCheckout($last_id);
 		}
-
-		$query = "INSERT INTO potty_tag.checkins (gender, active) VALUES ('" . $gender . "', 1)";
-
-		$result = mysql_query($query, $link);
-
-		if ($gender == 'm') $success = true;
-		if ($gender == 'f') $success = true;
-
+		
+		if ($gender == 'm' || $gender == 'f')
+		{
+			$query = "INSERT INTO potty_tag.checkins (gender, active) VALUES ('" . $gender . "', 1)";
+			$result = mysql_query($query, $link);
+			
+			if ($result)
+			{
+				$id = mysql_insert_id($link);
+				$output = '{"result": "success", "id": ' . $id . '}';
+			}
+		}
+		
 		cleanDatabase($link);
-
-		return $success;
+		
+		return $output;
 	}
 
 	function processCheckOut($checkin_id)
@@ -101,7 +102,7 @@
 
 		cleanDatabase($link);
 
-		return $success;
+		return '{"result": "' . ($success ?  'success' : 'failure') . "}'";
 	}
 
 	function cleanDatabase($link)

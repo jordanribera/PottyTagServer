@@ -1,10 +1,14 @@
 <?php
 
 	//ini_set('display_errors', 1);
+	$db_host = "localhost";
+	//$db_name = "potty_time";
+	$db_user = "root";
+	$db_password = "potty_time";
 
 	function returnStatus()
 	{
-		$link = mysql_connect("localhost", "root", "potty_time", true);
+		$link = mysql_connect($db_host, $db_user, $db_password, true);
 
 		$query = "SELECT * FROM potty_tag.checkins WHERE time >= date_sub(now(), INTERVAL 5 MINUTE)";
 
@@ -63,7 +67,7 @@
 	{
 		$success = false;
 
-		$link = mysql_connect("localhost", "root", "potty_time", true);
+		$link = mysql_connect($db_host, $db_user, $db_password, true);
 
 		if($last_id !== null)
 		{
@@ -86,7 +90,7 @@
 	{
 		$success = false;
 
-		$link = mysql_connect("localhost", "root", "potty_time", true);
+		$link = mysql_connect($db_host, $db_user, $db_password, true);
 
 		$query = "DELETE FROM potty_tag.checkins WHERE id='" . $checkin_id . "'";
 

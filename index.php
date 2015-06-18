@@ -3,7 +3,7 @@
 	function returnStatus()
 	{
 
-		$output = '{ "status": "free"}';
+		$output = '{ "male_population": 0, "female_population": 0}';
 
 		return $output;
 

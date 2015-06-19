@@ -65,7 +65,7 @@
 				break;
 
 			case 'checkout':
-				$checkin_id = $_GET['checkin_id'];
+				$checkin_id = $_GET['last_checkin'];
 				$output = processCheckOut($checkin_id);
 
 				break;

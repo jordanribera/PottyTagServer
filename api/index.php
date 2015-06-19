@@ -11,14 +11,14 @@
 		global $db_host, $db_user, $db_password;
 		$link = mysql_connect($db_host, $db_user, $db_password, true);
 
-		$query = "SELECT * FROM potty_tag.checkins WHERE time >= date_sub(now(), INTERVAL 5 MINUTE)";
-
-		$result = mysql_query($query, $link);
+		//get bathroom population
+		$population_query = "SELECT * FROM potty_tag.checkins WHERE time >= date_sub(now(), INTERVAL 5 MINUTE)";
+		$population_result = mysql_query($population_query, $link);
 
 		$male_pop = 0;
 		$female_pop = 0;
 
-		while ($row = mysql_fetch_assoc($result))
+		while ($row = mysql_fetch_assoc($population_result))
 		{
 
 			if ($row['gender'] == 'm') $male_pop++;
@@ -26,7 +26,21 @@
 
 		}
 
-		$output = '{"m_population": ' . $male_pop . ', "f_population": ' . $female_pop . '}';
+		// get toilet flags
+		$flags_query = "SELECT * FROM potty_tag.flags";
+		$left_toilet_status = "true";
+		$right_toilet_status = "true";
+		$flags_result = mysql_query($flags_query, $link);
+
+		while ($row = mysql_fetch_assoc($flags_result))
+		{
+
+			if ($row['toilet_id'] == 0 && $row['status_ok'] == 0) $left_toilet_status = "false";
+			if ($row['toilet_id'] == 1 && $row['status_ok'] == 0) $right_toilet_status = "false";
+
+		}
+
+		$output = '{"m_population": ' . $male_pop . ', "f_population": ' . $female_pop . ', "left_toilet": ' . $left_toilet_status . ', "right_toilet": ' . $right_toilet_status . '}';
 
 		cleanDatabase($link);
 
@@ -34,7 +48,7 @@
 
 	}
 
-	function performAction($action, $gender)
+	function performAction($action)
 	{
 
 		$output = '{"success": false}';
@@ -43,6 +57,7 @@
 		{
 
 			case 'checkin':
+				$gender = $_GET['gender'];
 				$last_id = null;
 				if(isset($_GET['last_checkin'])) $last_id = $_GET['last_checkin'];
 				$output = processCheckIn($gender, $last_id);
@@ -50,8 +65,20 @@
 				break;
 
 			case 'checkout':
-				$checkin_id = $_GET['checkin_id'];
+				$checkin_id = $_GET['last_checkin'];
 				$output = processCheckOut($checkin_id);
+
+				break;
+
+			case 'addflag':
+				$toilet_id = $_GET['toilet_id'];
+				$output = processAddFlag($toilet_id);
+
+				break;
+
+			case 'removeflag':
+				$toilet_id = $_GET['toilet_id'];
+				$output = processRemoveFlag($toilet_id);
 
 				break;
 
@@ -59,6 +86,28 @@
 
 		return $output;
 
+	}
+
+	function processAddFlag($toilet_id)
+	{
+		global $db_host, $db_user, $db_password;
+		$link = mysql_connect($db_host, $db_user, $db_password, true);
+
+		$query = "INSERT INTO potty_tag.flags (toilet_id, status_ok) VALUES(" . $toilet_id . ", 0) ON DUPLICATE KEY UPDATE status_ok=VALUES(status_ok)";
+		$result = mysql_query($query, $link);
+
+		return '{"success": true}';
+	}
+
+	function processRemoveFlag($toilet_id)
+	{
+		global $db_host, $db_user, $db_password;
+		$link = mysql_connect($db_host, $db_user, $db_password, true);
+
+		$query = "INSERT INTO potty_tag.flags (toilet_id, status_ok) VALUES(" . $toilet_id . ", 1) ON DUPLICATE KEY UPDATE status_ok=VALUES(status_ok)";
+		$result = mysql_query($query, $link);
+
+		return '{"success": true}';
 	}
 
 	function processCheckIn($gender, $last_id=null)
@@ -124,9 +173,8 @@
 		case 'action':
 
 			$action = $_GET['action'];
-			$gender = $_GET['gender'];
 
-			echo performAction($action, $gender);
+			echo performAction($action);
 
 			break;
 

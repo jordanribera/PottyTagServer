@@ -27,7 +27,7 @@
 		}
 
 		// get toilet flags
-		$flags_query = "SELECT * FROM potty_tag.flags"
+		$flags_query = "SELECT * FROM potty_tag.flags";
 		$left_toilet_status = true;
 		$right_toilet_status = true;
 		$flags_result = mysql_query($flags_query, $link);

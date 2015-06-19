@@ -95,6 +95,8 @@
 
 		$query = "INSERT INTO potty_tag.flags (toilet_id, status_ok) VALUES(" . $toilet_id . ", 0) ON DUPLICATE KEY UPDATE status_ok=VALUES(status_ok)";
 		$result = mysql_query($query, $link);
+
+		return '{"success": true}';
 	}
 
 	function processRemoveFlag($toilet_id)
@@ -104,6 +106,8 @@
 
 		$query = "INSERT INTO potty_tag.flags (toilet_id, status_ok) VALUES(" . $toilet_id . ", 1) ON DUPLICATE KEY UPDATE status_ok=VALUES(status_ok)";
 		$result = mysql_query($query, $link);
+
+		return '{"success": true}';
 	}
 
 	function processCheckIn($gender, $last_id=null)

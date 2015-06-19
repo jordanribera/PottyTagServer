@@ -28,19 +28,19 @@
 
 		// get toilet flags
 		$flags_query = "SELECT * FROM potty_tag.flags";
-		$left_toilet_status = true;
-		$right_toilet_status = true;
+		$left_toilet_status = "true";
+		$right_toilet_status = "true";
 		$flags_result = mysql_query($flags_query, $link);
 
 		while ($row = mysql_fetch_assoc($flags_result))
 		{
 
-			if ($row['toilet_id'] == 0 && $row['status_ok'] == 0) $left_toilet_status = false;
-			if ($row['toilet_id'] == 1 && $row['status_ok'] == 0) $right_toilet_status = false;
+			if ($row['toilet_id'] == 0 && $row['status_ok'] == 0) $left_toilet_status = "false";
+			if ($row['toilet_id'] == 1 && $row['status_ok'] == 0) $right_toilet_status = "false";
 
 		}
 
-		$output = '{"m_population": ' . $male_pop . ', "f_population": ' . $female_pop . ', "left_toilet": ' . $left_toilet_status . ', "right_toilet": ' . $right_toilet . '}';
+		$output = '{"m_population": ' . $male_pop . ', "f_population": ' . $female_pop . ', "left_toilet": ' . $left_toilet_status . ', "right_toilet": ' . $right_toilet_status . '}';
 
 		cleanDatabase($link);
 
